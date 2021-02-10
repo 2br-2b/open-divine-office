@@ -41,30 +41,35 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const hour = urlParams.get('hour');
 
-
 if (Object.keys(alternate_names).indexOf(hour) > -1) {
+    document.title = "Divine Office | " + hour.charAt(0).toUpperCase() + hour.slice(1);
     fetch("https://api.aelf.org/v1/" + alternate_names[hour] + "/" + todays_date + "/canada")
         .then(response => response.json())
         //.then(data => console.log(data))
         .then(
-            data => function (response_data) {
+            data => {
 
-                console.log(response_data);
+                //data = response_data.json()
+
+                console.log(data);
 
                 french_hour = alternate_names[hour];
 
                 var full_liturgy = "";
 
-                Object.keys(response_data[french_hour]).forEach(function (key) {
+                Object.keys(data[french_hour]).forEach(function (key) {
                     var value = data[french_hour][key];
                     full_liturgy += value + "<br>";
                 });
 
-                document.getElementById("body").value = full_liturgy;
+                document.getElementById("body").innerHTML = full_liturgy;
 
             }
 
+
+
         );
+    //document.getElementById("title").innerHTML = "Divine Office | " + hour.charAt(0).toUpperCase() + hour.slice(1);
 } else {
-    alert("No hour found!");
+    document.title = "Divine Office | Error";
 }
