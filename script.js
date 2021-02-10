@@ -54,15 +54,51 @@ if (Object.keys(alternate_names).indexOf(hour) > -1) {
                 console.log(data);
 
                 french_hour = alternate_names[hour];
+                hour_data = data[french_hour];
 
-                var full_liturgy = "";
+                $("body").append(hour_data["introduction"]);
+                try {
+                    $("body").append(psalm_to_html(hour_data["antienne_invitatoire"], hour_data["psaume_invitatoire"]));
+                } catch (error) {
+                    console.log(error);
+                }
 
-                Object.keys(data[french_hour]).forEach(function (key) {
-                    var value = data[french_hour][key];
-                    full_liturgy += value + "<br>";
-                });
+                //TODO: Add hymns
 
-                document.getElementById("body").innerHTML = full_liturgy;
+                $("body").append("<br><br><br>Hymn<br><br><br>");
+
+                for (var i = 1; i < 4; i++) {
+                    try {
+                        $("body").append(psalm_to_html(hour_data["antienne_" + i], hour_data["psaume_" + i]));
+
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                }
+
+
+                /*
+                                $("body").append(hour_data["antienne_1"]);
+                                $("body").append(psalm_to_html(hour_data["psaume_1"]));
+                                $("body").append(hour_data["antienne_1"]);
+                                $("body").append("<br>")
+                
+                                if (hour_data["psaume_2"].length > 0) {
+                                    $("body").append(hour_data["antienne_2"]);
+                                    $("body").append(psalm_to_html(hour_data["psaume_2"]));
+                                    $("body").append(hour_data["antienne_2"]);
+                                    $("body").append("<br>")
+                                }
+                
+                                try {
+                                    $("body").append(hour_data["antienne_3"]);
+                                    $("body").append(psalm_to_html(hour_data["psaume_3"]));
+                                    $("body").append(hour_data["antienne_3"]);
+                                    $("body").append("<br>")
+                                } catch (error) {
+                                    //No third psalm - for compline
+                                }*/
 
             }
 
@@ -72,4 +108,30 @@ if (Object.keys(alternate_names).indexOf(hour) > -1) {
     //document.getElementById("title").innerHTML = "Divine Office | " + hour.charAt(0).toUpperCase() + hour.slice(1);
 } else {
     document.title = "Divine Office | Error";
+    $("body").append("<p>The listed hour couldn't be found! Please go back in your browser and select a proper hour!</p>");
+}
+
+
+function psalm_to_html(antiphon, psalm) {
+    psalm_html = ""
+
+    if (antiphon != "") psalm_html += "<p><i>" + antiphon.replace("<p>", "").replace("</p>", "") + "</i></p>";
+
+
+    if (psalm["reference"].toUpperCase().includes("CANTIQUE")) {
+        psalm_html += "<h3>" + psalm["reference"] + "</h3>";
+    } else {
+        psalm_html += "<h3>Psalm " + psalm["reference"] + "</h3>";
+    }
+    psalm_html += psalm["texte"].substring(0, psalm["texte"].length - 4) + "<br><br>Glory to the Father and to the Son<br>and to the Holy Spirit.<br>As it was in the beginning, is now<br>and will be forever. Amen.</p>";
+
+    if (antiphon != "") psalm_html += "<p><i>" + antiphon.replace("<p>", "").replace("</p>", "") + "</i></p>";
+
+    psalm_html += "<br>";
+
+    console.log(psalm_html);
+
+    return psalm_html;
+
+
 }
